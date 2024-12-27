@@ -13,6 +13,11 @@ app.use(cors({
     methods: ['GET', 'POST'],
 }));
 
+app.get('/me', (req: Request, res: Response) => {
+    res.status(200).json({
+        msg: "jay Ganesh !"
+    })
+})
 // Create HTTP server
 const server = http.createServer(app);
 
@@ -81,11 +86,7 @@ wss.on('connection', (ws) => {
 
 // Start the server
 
-app.get('/me', (req: Request, res: Response) => {
-    res.status(200).json({
-        msg: "jay Ganesh !"
-    })
-})
+
 
 server.listen(PORT, () => {
     startMongo()

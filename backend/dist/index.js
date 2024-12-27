@@ -15,6 +15,11 @@ app.use((0, cors_1.default)({
     origin: '*', // Allow all origins (for HTTP routes)
     methods: ['GET', 'POST'],
 }));
+app.get('/me', (req, res) => {
+    res.status(200).json({
+        msg: "jay Ganesh !"
+    });
+});
 // Create HTTP server
 const server = http_1.default.createServer(app);
 // Create WebSocket server using the HTTP server instance
@@ -75,11 +80,6 @@ wss.on('connection', (ws) => {
     });
 });
 // Start the server
-app.get('/me', (req, res) => {
-    res.status(200).json({
-        msg: "jay Ganesh !"
-    });
-});
 server.listen(dotenv_1.PORT, () => {
     (0, Schema_1.startMongo)();
     console.log(`Server started on port ${dotenv_1.PORT}`);
