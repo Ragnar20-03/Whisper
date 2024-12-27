@@ -4,12 +4,16 @@ import http from "http";
 import { PORT } from "./config/dotenv";
 import { startMongo } from "./Schema/Schema";
 import { router as userRouter } from "./routes/user";
-import cors from "cors"
+import cors from "cors";
+
 const app = express();
+
+// Use CORS middleware for HTTP API routes
 app.use(cors({
-    origin: '*',  // Allow all origins, or replace with specific ones
+    origin: '*',  // Allow all origins
     methods: ['GET', 'POST'],
 }));
+
 // Middleware and routes
 app.use(express.json());
 app.use('/user', userRouter);  // User API routes
@@ -18,7 +22,18 @@ app.use('/user', userRouter);  // User API routes
 const server = http.createServer(app);
 
 // Create WebSocket server using the HTTP server instance
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({
+    server,
+    verifyClient: (info, done) => {
+        // Manually allow all origins for WebSocket connections
+        const origin = info.origin || '';
+        if (origin === '' || origin === 'http://localhost:3000' || origin.startsWith('http://') || origin.startsWith('https://')) {
+            done(true); // Allow the WebSocket connection
+        } else {
+            done(false, 403, 'Forbidden'); // Reject connection with a 403 status if origin is not allowed
+        }
+    }
+});
 
 // Store chat messages (could be replaced with a database)
 const chatMessages: { sender: string, message: string }[] = [];
