@@ -6,26 +6,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const ws_1 = __importDefault(require("ws"));
 const http_1 = __importDefault(require("http"));
-const dotenv_1 = require("./config/dotenv");
-const Schema_1 = require("./Schema/Schema");
-const user_1 = require("./routes/user");
 const cors_1 = __importDefault(require("cors"));
+const dotenv_1 = require("./config/dotenv"); // Make sure you have your .env set up for port
 const app = (0, express_1.default)();
-// Use CORS middleware for HTTP API routes
+// Middleware to allow any origin (CORS for HTTP routes, WebSocket is handled separately)
 app.use((0, cors_1.default)({
-    origin: '*', // Allow all origins
+    origin: '*', // Allow all origins (for HTTP routes)
     methods: ['GET', 'POST'],
 }));
-// Middleware and routes
-app.use(express_1.default.json());
-app.use('/user', user_1.router); // User API routes
 // Create HTTP server
 const server = http_1.default.createServer(app);
 // Create WebSocket server using the HTTP server instance
 const wss = new ws_1.default.Server({
     server,
-    // Remove verifyClient entirely or accept all connections without checking origin
-    // verifyClient: (info, done) => done(true) // This line is removed for simplicity
+    verifyClient: (info, done) => {
+        // You can check the `Origin` header here to control who connects.
+        // For now, we allow anyone to connect.
+        done(true); // Allow connection
+    },
 });
 // Store chat messages (could be replaced with a database)
 const chatMessages = [];
@@ -77,6 +75,5 @@ wss.on('connection', (ws) => {
 });
 // Start the server
 server.listen(dotenv_1.PORT, () => {
-    (0, Schema_1.startMongo)(); // Connect to MongoDB
     console.log(`Server started on port ${dotenv_1.PORT}`);
 });

@@ -1,22 +1,16 @@
 import express from "express";
 import WebSocket from "ws";
 import http from "http";
-import { PORT } from "./config/dotenv";
-import { startMongo } from "./Schema/Schema";
-import { router as userRouter } from "./routes/user";
 import cors from "cors";
+import { PORT } from "./config/dotenv";  // Make sure you have your .env set up for port
 
 const app = express();
 
-// Use CORS middleware for HTTP API routes
+// Middleware to allow any origin (CORS for HTTP routes, WebSocket is handled separately)
 app.use(cors({
-    origin: '*',  // Allow all origins
+    origin: '*',  // Allow all origins (for HTTP routes)
     methods: ['GET', 'POST'],
 }));
-
-// Middleware and routes
-app.use(express.json());
-app.use('/user', userRouter);  // User API routes
 
 // Create HTTP server
 const server = http.createServer(app);
@@ -24,8 +18,11 @@ const server = http.createServer(app);
 // Create WebSocket server using the HTTP server instance
 const wss = new WebSocket.Server({
     server,
-    // Remove verifyClient entirely or accept all connections without checking origin
-    // verifyClient: (info, done) => done(true) // This line is removed for simplicity
+    verifyClient: (info, done) => {
+        // You can check the `Origin` header here to control who connects.
+        // For now, we allow anyone to connect.
+        done(true);  // Allow connection
+    },
 });
 
 // Store chat messages (could be replaced with a database)
@@ -83,6 +80,5 @@ wss.on('connection', (ws) => {
 
 // Start the server
 server.listen(PORT, () => {
-    startMongo(); // Connect to MongoDB
     console.log(`Server started on port ${PORT}`);
 });
