@@ -15,13 +15,10 @@ app.use((0, cors_1.default)({
     origin: '*', // Allow all origins (for HTTP routes)
     methods: ['GET', 'POST'],
 }));
-app.use((req, res, next) => {
-    console.log(`Incoming request: ${req.method} ${req.url}`);
-    next();
-});
 app.get('/me', (req, res) => {
-    console.log('Handling /me route');
-    res.status(200).json({ msg: 'jay Ganesh !' });
+    res.status(200).json({
+        msg: "jay Ganesh !"
+    });
 });
 // Create HTTP server
 const server = http_1.default.createServer(app);
