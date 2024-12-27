@@ -8,6 +8,7 @@ const ws_1 = __importDefault(require("ws"));
 const http_1 = __importDefault(require("http"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = require("./config/dotenv"); // Make sure you have your .env set up for port
+const Schema_1 = require("./Schema/Schema");
 const app = (0, express_1.default)();
 // Middleware to allow any origin (CORS for HTTP routes, WebSocket is handled separately)
 app.use((0, cors_1.default)({
@@ -75,5 +76,6 @@ wss.on('connection', (ws) => {
 });
 // Start the server
 server.listen(dotenv_1.PORT, () => {
+    (0, Schema_1.startMongo)();
     console.log(`Server started on port ${dotenv_1.PORT}`);
 });
