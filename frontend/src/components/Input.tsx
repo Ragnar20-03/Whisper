@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function Input({ socket }: { socket: WebSocket | null }) {
   const [message, setMessage] = useState("");

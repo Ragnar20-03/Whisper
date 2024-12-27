@@ -1,11 +1,11 @@
-import ChatBoxHeader from "./chatBoxHeader";
+import ChatBoxHeader from "./ChatBoxHeader";
 
 interface ChatBoxProps {
   socket: WebSocket | null;
   username: string;
 }
 
-function ChatBox({ socket, username }: ChatBoxProps) {
+function ChatBox({ socket }: ChatBoxProps) {
   return (
     <div className="p-4 m-4 border border-black min-h-96">
       <ChatBoxHeader socket={socket} />

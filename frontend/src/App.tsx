@@ -6,13 +6,10 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
-import ChatBox from "./components/ChatBox";
-import Input from "./components/Input";
+
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <Router>
       <div className="bg-black h-20 w-full text-center">
@@ -60,7 +57,6 @@ function Home() {
 }
 
 function ChatPage() {
-  const navigate = useNavigate();
   const location = useLocation();
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [messageInput, setMessageInput] = useState("");
