@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -9,7 +9,39 @@ import {
 
 import "./App.css";
 
-function App() {
+// Error Boundary Component
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Error caught in ErrorBoundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <h2>Something went wrong. Please try again later.</h2>;
+    }
+
+    return this.props.children;
+  }
+}
+
+const App = () => {
   return (
     <Router>
       <div className="bg-black h-20 w-full text-center">
@@ -17,13 +49,20 @@ function App() {
       </div>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/chat" element={<ChatPage />} />
+        <Route
+          path="/chat"
+          element={
+            <ErrorBoundary>
+              <ChatPage />
+            </ErrorBoundary>
+          }
+        />
       </Routes>
     </Router>
   );
-}
+};
 
-function Home() {
+const Home = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
 
@@ -34,9 +73,8 @@ function Home() {
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <label className=" p-3 m-3" htmlFor=" ">
-        {" "}
-        Enter username{" "}
+      <label className="p-3 m-3" htmlFor=" ">
+        Enter username
       </label>
       <input
         type="text"
@@ -54,20 +92,21 @@ function Home() {
       </button>
     </div>
   );
-}
+};
 
-function ChatPage() {
+const ChatPage = () => {
   const location = useLocation();
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [messageInput, setMessageInput] = useState("");
+  const [messageInput, setMessageInput] = useState<string>("");
   const [chatMessages, setChatMessages] = useState<
     { sender: string; message: string }[]
   >([]);
 
-  const username = location.state?.username; // Get the username from the location state
+  // Ensure username is set from location.state or default to "Anonymous"
+  const username = location.state?.username || "Anonymous";
 
   useEffect(() => {
-    let newSocket = new WebSocket("ws://localhost:5100");
+    const newSocket = new WebSocket("ws://13.211.152.31:5100");
     setSocket(newSocket);
 
     newSocket.onopen = () => {
@@ -87,13 +126,20 @@ function ChatPage() {
       }
     };
 
+    newSocket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
     return () => {
       newSocket.close();
     };
   }, [username]);
 
   const sendMessage = () => {
-    if (messageInput.trim() === "" || !socket) return;
+    if (messageInput.trim() === "" || !socket) {
+      console.error("Socket is not initialized or message is empty");
+      return;
+    }
 
     // Send the message as a JSON object to the backend
     const message = { type: "newMessage", message: messageInput };
@@ -151,6 +197,6 @@ function ChatPage() {
       </div>
     </div>
   );
-}
+};
 
 export default App;

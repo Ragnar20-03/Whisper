@@ -4,9 +4,12 @@ import http from "http";
 import { PORT } from "./config/dotenv";
 import { startMongo } from "./Schema/Schema";
 import { router as userRouter } from "./routes/user";
-
+import cors from "cors"
 const app = express();
-
+app.use(cors({
+    origin: '*',  // Allow all origins, or replace with specific ones
+    methods: ['GET', 'POST'],
+}));
 // Middleware and routes
 app.use(express.json());
 app.use('/user', userRouter);  // User API routes
