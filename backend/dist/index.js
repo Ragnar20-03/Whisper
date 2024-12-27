@@ -75,6 +75,11 @@ wss.on('connection', (ws) => {
     });
 });
 // Start the server
+app.get('/me', (req, res) => {
+    res.status(200).json({
+        msg: "jay Ganesh !"
+    });
+});
 server.listen(dotenv_1.PORT, () => {
     (0, Schema_1.startMongo)();
     console.log(`Server started on port ${dotenv_1.PORT}`);

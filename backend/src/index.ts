@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import WebSocket from "ws";
 import http from "http";
 import cors from "cors";
@@ -80,6 +80,12 @@ wss.on('connection', (ws) => {
 });
 
 // Start the server
+
+app.get('/me', (req: Request, res: Response) => {
+    res.status(200).json({
+        msg: "jay Ganesh !"
+    })
+})
 
 server.listen(PORT, () => {
     startMongo()
