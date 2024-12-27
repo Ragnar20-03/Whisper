@@ -6,15 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const ws_1 = __importDefault(require("ws"));
 const http_1 = __importDefault(require("http"));
-const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = require("./config/dotenv"); // Make sure you have your .env set up for port
 const Schema_1 = require("./Schema/Schema");
 const app = (0, express_1.default)();
 // Middleware to allow any origin (CORS for HTTP routes, WebSocket is handled separately)
-app.use((0, cors_1.default)({
-    origin: '*', // Allow all origins (for HTTP routes)
-    methods: ['GET', 'POST'],
-}));
 app.get('/me', (req, res) => {
     res.status(200).json({
         msg: "jay Ganesh !"

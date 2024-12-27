@@ -8,10 +8,7 @@ import { startMongo } from "./Schema/Schema";
 const app = express();
 
 // Middleware to allow any origin (CORS for HTTP routes, WebSocket is handled separately)
-app.use(cors({
-    origin: '*',  // Allow all origins (for HTTP routes)
-    methods: ['GET', 'POST'],
-}));
+
 
 app.get('/me', (req: Request, res: Response) => {
     res.status(200).json({
