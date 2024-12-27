@@ -2,7 +2,8 @@ import express from "express";
 import WebSocket from "ws";
 import http from "http";
 import cors from "cors";
-import { PORT } from "./config/dotenv";  // Make sure you have your .env set up for port
+import { HOST, PORT } from "./config/dotenv";  // Make sure you have your .env set up for port
+import { startMongo } from "./Schema/Schema";
 
 const app = express();
 
@@ -79,6 +80,9 @@ wss.on('connection', (ws) => {
 });
 
 // Start the server
+
 server.listen(PORT, () => {
+    startMongo()
     console.log(`Server started on port ${PORT}`);
-});
+
+})

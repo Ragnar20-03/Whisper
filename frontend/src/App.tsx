@@ -106,7 +106,7 @@ const ChatPage = () => {
   const username = location.state?.username || "Anonymous";
 
   useEffect(() => {
-    const newSocket = new WebSocket("ws://13.211.152.31:5100");
+    const newSocket = new WebSocket("wss://13.211.152.31:5100");
     setSocket(newSocket);
 
     newSocket.onopen = () => {
