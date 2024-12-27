@@ -26,9 +26,9 @@ const server = http_1.default.createServer(app);
 const wss = new ws_1.default.Server({
     server,
     verifyClient: (info, done) => {
-        // You can check the `Origin` header here to control who connects.
-        // For now, we allow anyone to connect.
-        done(true); // Allow connection
+        console.log(`Incoming connection from origin: ${info.origin}`);
+        // Allow all origins for now
+        done(true);
     },
 });
 // Store chat messages (could be replaced with a database)
