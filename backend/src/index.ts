@@ -1,93 +1,63 @@
-import express, { Request, Response } from "express";
-import WebSocket from "ws";
-import http from "http";
-import cors from "cors";
-import { HOST, PORT } from "./config/dotenv";  // Make sure you have your .env set up for port
-import { startMongo } from "./Schema/Schema";
+import express from "express"
+import http from "http"
+import { WebSocket, WebSocketServer } from "ws";
+import { ChatManager } from "./ChatManger";
+import { EXIT, INIT, INIT_ROOM, JOIN_ROOM, NEW_MSG, } from "./types";
+import { RoomManager } from "./RoomManager";
 
 const app = express();
-
-// Middleware to allow any origin (CORS for HTTP routes, WebSocket is handled separately)
-
-
-app.get('/me', (req: Request, res: Response) => {
+app.get('/', (req, res) => {
     res.status(200).json({
-        msg: "jay Ganesh !"
+        msg: "Chat Application !"
     })
 })
-// Create HTTP server
+
 const server = http.createServer(app);
-
-// Create WebSocket server using the HTTP server instance
-const wss = new WebSocket.Server({
-    server,
-    verifyClient: (info, done) => {
-        console.log(`Incoming connection from origin: ${info.origin}`);
-        // Allow all origins for now
-        done(true);
-    },
-});
-
-
-// Store chat messages (could be replaced with a database)
-const chatMessages: { sender: string, message: string }[] = [];
+const wss = new WebSocketServer({ server })
 let userConnected = 0;
+let chatManger: null | ChatManager
+let roomManager: null | RoomManager
+let roomId = 0;
 
-wss.on('connection', (ws) => {
+wss.on('connection', (socket: WebSocket) => {
     userConnected++;
-    console.log("User connected!", userConnected);
-
-    // Send the stored messages to the new client
-    ws.send(JSON.stringify({ type: 'init', messages: chatMessages }));
-
-    // Track the user's username (initialized as null)
-    let username: string | null = null;
-
-    // Listen for messages from the client
-    ws.on('message', (message) => {
-        // Parse incoming message to JSON
-        let parsedMessage;
+    console.log("UserConnected : ", userConnected);
+    socket.on('message', (message: string | any) => {
         try {
-            parsedMessage = JSON.parse(message.toString());
-        } catch (e) {
-            console.error('Failed to parse message:', e);
-            return;
+            let clientMessage = JSON.parse(message);
+            console.log("Clinet message is : ", clientMessage)
+            if (clientMessage.type == INIT) {
+                chatManger?.addUser(socket, clientMessage.username)
+                let response = { status: "success", type: "new_user" }
+            }
+            if (clientMessage.type == EXIT) {
+                chatManger?.removeUser(socket);
+            }
+            if (clientMessage.type == INIT_ROOM) {
+
+                const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+                let newRoom = roomManager?.createRoom(++roomId, clientMessage.roomName, socket, clientMessage.username, roomCode)
+                let response = { status: "success", roomCode, roomName: clientMessage.roomName }
+                socket.send(JSON.stringify(response));
+            }
+            if (clientMessage.type == JOIN_ROOM) {
+                roomManager?.joinRoom(clientMessage.roomCode, socket, clientMessage.username)
+
+            }
+            if (clientMessage.type == NEW_MSG) {
+                roomManager?.broadCastMessage(clientMessage.roomId, socket, clientMessage.message)
+            }
+        } catch (error) {
+            console.log("error occuured ", error);
+
         }
-
-        // Check the message type and handle accordingly
-        if (parsedMessage.type === 'setUsername') {
-            // Set the username when the client sends it
-            username = parsedMessage.username;
-            console.log(`Username set to: ${username}`);
-        } else if (parsedMessage.type === 'newMessage' && username) {
-            // Handle new chat messages
-            const newMessage = { sender: username, message: parsedMessage.message };
-            chatMessages.push(newMessage);
-
-            // Broadcast the new message to all other connected clients
-            wss.clients.forEach((client) => {
-                if (client !== ws && client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({ type: 'newMessage', message: newMessage }));
-                }
-            });
-        } else {
-            console.error('Invalid message or username not set.');
-        }
-    });
-
-    // Listen for client disconnect
-    ws.on('close', () => {
-        userConnected--;
-        console.log('User disconnected!', userConnected);
-    });
-});
-
-// Start the server
+    })
+})
 
 
-
-server.listen(PORT, () => {
-    startMongo()
-    console.log(`Server started on port ${PORT}`);
+server.listen(5100, () => {
+    chatManger = ChatManager.getInstance();
+    roomManager = RoomManager.getInstance();
+    console.log("Server started on port number : ", 5100);
 
 })
