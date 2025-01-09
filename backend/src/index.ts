@@ -29,6 +29,7 @@ wss.on('connection', (socket: WebSocket) => {
             if (clientMessage.type == INIT) {
                 chatManger?.addUser(socket, clientMessage.username)
                 let response = { status: "success", type: "new_user" }
+                socket.send(JSON.stringify(response))
             }
             if (clientMessage.type == EXIT) {
                 chatManger?.removeUser(socket);
@@ -38,6 +39,8 @@ wss.on('connection', (socket: WebSocket) => {
                 const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase();
                 let newRoom = roomManager?.createRoom(++roomId, clientMessage.roomName, socket, clientMessage.username, roomCode)
                 let response = { status: "success", roomCode, roomName: clientMessage.roomName }
+                console.log("new Room Code is : ", roomCode);
+
                 socket.send(JSON.stringify(response));
             }
             if (clientMessage.type == JOIN_ROOM) {

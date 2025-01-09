@@ -31,6 +31,7 @@ wss.on('connection', (socket) => {
             if (clientMessage.type == types_1.INIT) {
                 chatManger === null || chatManger === void 0 ? void 0 : chatManger.addUser(socket, clientMessage.username);
                 let response = { status: "success", type: "new_user" };
+                socket.send(JSON.stringify(response));
             }
             if (clientMessage.type == types_1.EXIT) {
                 chatManger === null || chatManger === void 0 ? void 0 : chatManger.removeUser(socket);
@@ -39,6 +40,7 @@ wss.on('connection', (socket) => {
                 const roomCode = Math.random().toString(36).substr(2, 6).toUpperCase();
                 let newRoom = roomManager === null || roomManager === void 0 ? void 0 : roomManager.createRoom(++roomId, clientMessage.roomName, socket, clientMessage.username, roomCode);
                 let response = { status: "success", roomCode, roomName: clientMessage.roomName };
+                console.log("new Room Code is : ", roomCode);
                 socket.send(JSON.stringify(response));
             }
             if (clientMessage.type == types_1.JOIN_ROOM) {
