@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import socketSlice from "./socketSlice";
 
 
 interface Room {
@@ -19,5 +20,13 @@ const roomSlice = createSlice({
             state.roomName = action.payload.roomName;
             state.roomCode = action.payload.roomCode;
         }
+        ,
+        removeRoom: (state) => {
+            state.roomCode = ""
+            state.roomName = ""
+        }
     }
 })
+
+export const { setRoom, removeRoom } = roomSlice.actions
+export default roomSlice.reducer
