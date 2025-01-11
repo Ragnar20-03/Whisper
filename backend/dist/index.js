@@ -7,7 +7,9 @@ const express_1 = __importDefault(require("express"));
 const http_1 = __importDefault(require("http"));
 const ws_1 = require("ws");
 const AppManager_1 = require("./Managers/AppManager");
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
 let appManager = null;
 app.get('/', (req, res) => {
     // console.log("chat application !");
@@ -26,10 +28,10 @@ wss.on('connection', (socket) => {
         appManager === null || appManager === void 0 ? void 0 : appManager.handleType(type, clientMessage, socket);
     });
     socket.on('close', () => {
-        console.log("coket is closing ");
+        console.log("scoket is closing ");
     });
 });
-server.listen(5100, () => {
+server.listen(5100, '0.0.0.0', () => {
     console.log("welcomw to chat application !");
     appManager = AppManager_1.AppManager.getInstance();
     appManager.startApp();

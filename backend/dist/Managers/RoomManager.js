@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoomManager = void 0;
+const types_1 = require("../types");
 class RoomManager {
     constructor() {
         this.rooms = [];
@@ -22,6 +23,7 @@ class RoomManager {
             msg: " Room Created Succesfully !",
             room: { roomName, roomCode }
         };
+        console.log("room Created Succesfully !");
         socket.send(JSON.stringify(response));
     }
     joinRoom(roomCode, socket, roomName, user) {
@@ -30,15 +32,18 @@ class RoomManager {
             room.users.push(socket);
             let response = {
                 status: "success",
-                msg: "Room Joined Succesfully"
+                msg: "Room Joined Succesfully",
+                roomName: room.roomName,
+                roomCode
             };
+            console.log(response);
             socket.send(JSON.stringify(response));
             return true;
         }
         else {
             let response = {
                 status: "failed",
-                msg: "No Such Room "
+                msg: "No Such Room ",
             };
             socket.send(JSON.stringify(response));
         }
@@ -46,7 +51,7 @@ class RoomManager {
     broadCast(roomCode, socket, ClientMessage) {
         let room = this.rooms.find(r => r.roomCode === roomCode);
         if (room) {
-            let msg = { username: ClientMessage.username, message: ClientMessage.message, timestamp: new Date() };
+            let msg = { type: types_1.IN_MSG, username: ClientMessage.username, message: ClientMessage.message, timestamp: new Date() };
             room.users.forEach((socket) => {
                 socket.send(JSON.stringify(msg));
             });

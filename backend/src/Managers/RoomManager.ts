@@ -1,7 +1,9 @@
 import WebSocket from "ws";
 import { IUser } from "./UserManager";
+import { IN_MSG } from "../types";
 
 interface IMessage {
+    type: string
     socket?: WebSocket,
     username: string,
     message: string | any,
@@ -39,6 +41,8 @@ export class RoomManager {
             msg: " Room Created Succesfully !",
             room: { roomName, roomCode }
         }
+        console.log("room Created Succesfully !");
+
         socket.send(JSON.stringify(response))
     }
 
@@ -48,15 +52,19 @@ export class RoomManager {
             room.users.push(socket)
             let response = {
                 status: "success",
-                msg: "Room Joined Succesfully"
-            }
+                msg: "Room Joined Succesfully",
+                roomName: room.roomName,
+                roomCode
+            };
+            console.log(response)
             socket.send(JSON.stringify(response));
             return true
         }
         else {
             let response = {
                 status: "failed",
-                msg: "No Such Room "
+                msg: "No Such Room ",
+
             }
             socket.send(JSON.stringify(response));
         }
@@ -65,7 +73,7 @@ export class RoomManager {
     broadCast(roomCode: string, socket: WebSocket, ClientMessage: string | any) {
         let room = this.rooms.find(r => r.roomCode === roomCode)
         if (room) {
-            let msg: IMessage = { username: ClientMessage.username, message: ClientMessage.message, timestamp: new Date() }
+            let msg: IMessage = { type: IN_MSG, username: ClientMessage.username, message: ClientMessage.message, timestamp: new Date() }
             room.users.forEach((socket) => {
                 socket.send(JSON.stringify(msg))
             })
