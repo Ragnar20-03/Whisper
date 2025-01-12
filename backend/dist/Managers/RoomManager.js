@@ -26,15 +26,16 @@ class RoomManager {
         console.log("room Created Succesfully !");
         socket.send(JSON.stringify(response));
     }
-    joinRoom(roomCode, socket, roomName, user) {
+    joinRoom(roomCode, socket, user) {
         let room = this.rooms.find(r => r.roomCode === roomCode);
         if (room) {
             room.users.push(socket);
             let response = {
+                id: "room",
                 status: "success",
                 msg: "Room Joined Succesfully",
                 roomName: room.roomName,
-                roomCode
+                roomCode: room.roomCode
             };
             console.log(response);
             socket.send(JSON.stringify(response));

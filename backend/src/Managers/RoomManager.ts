@@ -46,15 +46,16 @@ export class RoomManager {
         socket.send(JSON.stringify(response))
     }
 
-    joinRoom(roomCode: string, socket: WebSocket, roomName: string, user: IUser) {
+    joinRoom(roomCode: string, socket: WebSocket, user: IUser) {
         let room: IRoom | undefined = this.rooms.find(r => r.roomCode === roomCode)
         if (room) {
             room.users.push(socket)
             let response = {
+                id: "room",
                 status: "success",
                 msg: "Room Joined Succesfully",
                 roomName: room.roomName,
-                roomCode
+                roomCode: room.roomCode
             };
             console.log(response)
             socket.send(JSON.stringify(response));

@@ -21,6 +21,7 @@ class UserManager {
         console.log("user....");
         this.users.push(userData);
         let response = {
+            id: "user",
             status: "success",
             msg: "Connected / Added Succesfully !"
         };

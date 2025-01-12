@@ -5,6 +5,7 @@ import { RootState } from "../store";
 import { setSocket } from "../slices/socketSlice";
 import { useNavigate } from "react-router-dom";
 import { setRoom } from "../slices/roomSlice";
+import { setUser } from "../slices/userSlice";
 
 export const JoinRoom: React.FC = () => {
   const dispatch = useDispatch();
@@ -19,8 +20,13 @@ export const JoinRoom: React.FC = () => {
     } else {
       const handleMessage = (e: MessageEvent) => {
         const data = JSON.parse(e.data);
-        console.log("data is : ", data);
-        dispatch(setRoom({ roomName: data.roomName }));
+        if (data.status === "success" && data.id == "room") {
+          console.log("data from joinroom  is : ", data);
+          dispatch(
+            setRoom({ roomName: data.roomName, roomCode: data.roomCode })
+          );
+          navigate("/chat");
+        }
       };
 
       socket.onmessage = handleMessage;
@@ -35,9 +41,14 @@ export const JoinRoom: React.FC = () => {
     [socket, roomCode, navigate];
 
   const onJoinHandler = () => {
+    dispatch(setUser({ username: username, isAdmin: false }));
     let req = { type: "init", username: username };
     socket?.send(JSON.stringify(req));
-    req = { type: "join_room", username: username, roomCode: roomCode } as {
+    req = {
+      type: "join_room",
+      username: username,
+      roomCode: roomCode,
+    } as {
       type: string;
       username: string;
       roomCode: string;

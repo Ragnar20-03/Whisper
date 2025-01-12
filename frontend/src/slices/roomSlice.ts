@@ -17,8 +17,10 @@ const roomSlice = createSlice({
     initialState,
     reducers: {
         setRoom: (state, action: PayloadAction<{ roomName: string, roomCode: string }>) => {
+
             state.roomName = action.payload.roomName;
             state.roomCode = action.payload.roomCode;
+
         }
         ,
         removeRoom: (state) => {

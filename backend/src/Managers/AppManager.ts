@@ -31,7 +31,7 @@ export class AppManager {
         else if (type === JOIN_ROOM) {
             let user = this.userManager?.users.find(u => u.socket === socket)
             if (user) {
-                this.roomManager?.joinRoom(message.roomCode, socket, message.roomName, user)
+                this.roomManager?.joinRoom(message.roomCode, socket, user)
             }
         }
         else if (type == EXIT_ROOM) {

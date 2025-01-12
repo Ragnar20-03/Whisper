@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../store";
+import { setRoom } from "../slices/roomSlice";
 
 function Chat() {
   // Define the message interface
@@ -10,7 +11,7 @@ function Chat() {
     message: string;
     timeStamp: Date;
   }
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const room = useSelector((state: RootState) => state.room);
   const user = useSelector((state: RootState) => state.user);
@@ -28,10 +29,17 @@ function Chat() {
 
     // Check if the WebSocket is initialized
     if (socket) {
+      console.log("ROom State is : ", room);
+
       // Listen for incoming messages
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("data is : ", data);
+        if (data.type == "success") {
+          console.log("data is : roshan", data);
+          dispatch(
+            setRoom({ roomName: data.roomName, roomCode: data.roomCode })
+          );
+        }
 
         if (data.type === "in_msg" && data.username && data.message) {
           // Add the incoming message to the message list
@@ -51,7 +59,7 @@ function Chat() {
         socket.onmessage = null; // Clean up the socket listener
       }
     };
-  }, [socket, user.username, navigate]);
+  }, [socket, user.username, navigate, room]);
 
   // Function to handle sending messages
   const sendMessage = () => {

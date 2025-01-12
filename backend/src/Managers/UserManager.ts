@@ -26,6 +26,7 @@ export class UserManager {
 
         this.users.push(userData);
         let response = {
+            id: "user",
             status: "success",
             msg: "Connected / Added Succesfully !"
         }

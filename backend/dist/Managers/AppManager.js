@@ -30,7 +30,7 @@ class AppManager {
         else if (type === types_1.JOIN_ROOM) {
             let user = (_c = this.userManager) === null || _c === void 0 ? void 0 : _c.users.find(u => u.socket === socket);
             if (user) {
-                (_d = this.roomManager) === null || _d === void 0 ? void 0 : _d.joinRoom(message.roomCode, socket, message.roomName, user);
+                (_d = this.roomManager) === null || _d === void 0 ? void 0 : _d.joinRoom(message.roomCode, socket, user);
             }
         }
         else if (type == types_1.EXIT_ROOM) {
